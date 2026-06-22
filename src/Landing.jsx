@@ -137,44 +137,44 @@ function Navbar() {
 function Hero() {
   return (
     <section
-      className="min-h-screen flex flex-col justify-center relative overflow-hidden"
+      className="flex flex-col justify-center relative overflow-hidden"
       style={{ background: 'linear-gradient(135deg, #071829 0%, #0B3D5C 45%, #1B7A78 100%)' }}
     >
       {/* subtle dot pattern */}
       <div className="absolute inset-0 opacity-5"
         style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
 
-      <div className="relative max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div className="relative max-w-7xl mx-auto px-5 py-8 md:py-20 grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 items-center">
         {/* Left copy */}
         <div>
-          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-white text-sm font-medium px-4 py-2 rounded-full mb-8">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-white text-xs md:text-sm font-medium px-3 py-1.5 md:px-4 md:py-2 rounded-full mb-4 md:mb-8">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             Estabelecimento com CNPJ ativo
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-extrabold text-white leading-tight mb-6">
+          <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight mb-3 md:mb-6">
             Soluções em depósito<br />
             com <span style={{ color: '#5EC8C4' }}>atendimento direto</span><br />
             e transparente.
           </h1>
 
-          <p className="text-white/70 text-lg leading-relaxed mb-10 max-w-lg">
+          <p className="hidden md:block text-white/70 text-lg leading-relaxed mb-10 max-w-lg">
             O Deposito do Creusão atua no comércio e armazenagem de mercadorias em Ouro Verde de Minas,
             com presença local clara, confiável e fácil de validar.
           </p>
 
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-3 md:gap-4 mt-5 md:mt-0">
             <a
               href={`https://wa.me/55${CO.telefone.replace(/\D/g, '')}`}
               target="_blank" rel="noreferrer"
-              className="inline-block font-bold px-8 py-4 rounded-full transition-all hover:brightness-110 active:scale-95"
+              className="inline-block font-bold px-6 py-3 md:px-8 md:py-4 text-sm md:text-base rounded-full transition-all hover:brightness-110 active:scale-95"
               style={{ background: '#C9932A', color: '#fff' }}
             >
               Falar com atendimento
             </a>
             <a
               href="#dados"
-              className="inline-block border-2 border-white/40 text-white font-bold px-8 py-4 rounded-full hover:bg-white/10 transition-all"
+              className="inline-block border-2 border-white/40 text-white font-bold px-6 py-3 md:px-8 md:py-4 text-sm md:text-base rounded-full hover:bg-white/10 transition-all"
             >
               Conferir dados
             </a>
@@ -182,24 +182,24 @@ function Hero() {
         </div>
 
         {/* Right card — Resumo institucional */}
-        <div className="bg-white/10 border border-white/20 backdrop-blur-sm rounded-2xl p-6">
-          <p className="text-white font-bold text-lg mb-5">Resumo institucional</p>
-          <div className="grid grid-cols-2 gap-3">
+        <div className="bg-white/10 border border-white/20 backdrop-blur-sm rounded-2xl p-4 md:p-6">
+          <p className="text-white font-bold text-sm md:text-lg mb-3 md:mb-5">Resumo institucional</p>
+          <div className="grid grid-cols-2 gap-2 md:gap-3">
             {[
               { label: 'NOME FANTASIA', value: CO.fantasia           },
               { label: 'ABERTURA',      value: CO.abertura           },
               { label: 'LOCALIDADE',    value: `${CO.cidade} / ${CO.estado}` },
               { label: 'ATIVIDADE',     value: 'Depósito de mercadorias' },
             ].map(item => (
-              <div key={item.label} className="bg-white/10 border border-white/10 rounded-xl p-4">
-                <p className="text-white/50 text-[10px] font-bold uppercase tracking-widest mb-1">{item.label}</p>
-                <p className="text-white font-bold text-sm">{item.value}</p>
+              <div key={item.label} className="bg-white/10 border border-white/10 rounded-xl p-3 md:p-4">
+                <p className="text-white/50 text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-0.5 md:mb-1">{item.label}</p>
+                <p className="text-white font-bold text-xs md:text-sm">{item.value}</p>
               </div>
             ))}
           </div>
-          <div className="mt-4 pt-4 border-t border-white/10">
-            <p className="text-white/50 text-[10px] font-bold uppercase tracking-widest mb-1">CNPJ</p>
-            <p className="text-white font-bold">{CO.cnpj}</p>
+          <div className="mt-3 md:mt-4 pt-3 md:pt-4 border-t border-white/10">
+            <p className="text-white/50 text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-0.5 md:mb-1">CNPJ</p>
+            <p className="text-white font-bold text-sm md:text-base">{CO.cnpj}</p>
           </div>
         </div>
       </div>

@@ -86,9 +86,17 @@ const IcoLock = ({ s = 12 }) => (
 
 // ── Navbar ────────────────────────────────────────────────────────────────────
 
+const NAV_LINKS = [
+  { label: 'Simular',    href: '#simular'    },
+  { label: 'Benefícios', href: '#beneficios' },
+  { label: 'Condições',  href: '#condicoes'  },
+  { label: 'Sobre',      href: '#sobre'      },
+]
+
 function Navbar() {
   const { scrollY } = useScroll()
   const shadow = useTransform(scrollY, [0, 40], ['0 0 0 0 transparent', '0 2px 16px 0 rgba(0,0,0,.07)'])
+  const [open, setOpen] = useState(false)
 
   return (
     <motion.nav
@@ -99,6 +107,7 @@ function Navbar() {
       className="bg-white border-b border-gray-100 sticky top-0 z-50"
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        {/* Logo + desktop links */}
         <div className="flex items-center gap-10">
           <motion.img
             src={LOGO}
@@ -109,12 +118,7 @@ function Navbar() {
             transition={{ delay: 0.3 }}
           />
           <div className="hidden md:flex items-center gap-8">
-            {[
-              { label: 'Simular',    href: '#simular'    },
-              { label: 'Benefícios', href: '#beneficios' },
-              { label: 'Condições',  href: '#condicoes'  },
-              { label: 'Sobre',      href: '#sobre'      },
-            ].map(({ label, href }, i) => (
+            {NAV_LINKS.map(({ label, href }, i) => (
               <motion.a
                 key={label}
                 href={href}
@@ -128,17 +132,56 @@ function Navbar() {
             ))}
           </div>
         </div>
+
+        {/* Desktop: Suporte button | Mobile: hamburger */}
         <motion.button
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.65 }}
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.97 }}
-          className="border border-gray-800 text-gray-800 px-5 py-2 rounded-full text-sm font-semibold hover:bg-gray-50 transition-colors"
+          onClick={() => setOpen(o => !o)}
+          className="md:hidden p-2 text-gray-700"
+          aria-label="Menu"
+        >
+          {open ? (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          ) : (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          )}
+        </motion.button>
+
+        <motion.button
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.65 }}
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.97 }}
+          className="hidden md:block border border-gray-800 text-gray-800 px-5 py-2 rounded-full text-sm font-semibold hover:bg-gray-50 transition-colors"
         >
           Suporte
         </motion.button>
       </div>
+
+      {/* Mobile dropdown */}
+      {open && (
+        <div className="md:hidden border-t border-gray-100 bg-white px-6 pb-4">
+          {NAV_LINKS.map(({ label, href }) => (
+            <a
+              key={label}
+              href={href}
+              onClick={() => setOpen(false)}
+              className="block py-3.5 text-gray-700 font-medium border-b border-gray-50 last:border-0 text-base"
+            >
+              {label}
+            </a>
+          ))}
+        </div>
+      )}
     </motion.nav>
   )
 }
@@ -154,11 +197,11 @@ function Hero() {
   return (
     <section id="simular" className="bg-[#EEF2FF]">
       <div
-        className="max-w-7xl mx-auto px-6 py-16 lg:py-0 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
-        style={{ minHeight: 'calc(100vh - 73px)' }}
+        className="max-w-7xl mx-auto px-6 py-10 lg:py-0 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center"
+        style={{ minHeight: 'calc(100vh - 65px)' }}
       >
         {/* ── Left copy ── */}
-        <div className="py-16">
+        <div className="lg:py-16">
           <motion.p
             className="text-[#2563EB] font-semibold text-sm mb-4"
             variants={fadeUp(0.2)} initial="hidden" animate="show"
@@ -167,49 +210,49 @@ function Hero() {
           </motion.p>
 
           <motion.h1
-            className="text-[3.25rem] leading-tight font-extrabold text-[#1E293B]"
+            className="text-[2.4rem] md:text-[3.25rem] leading-tight font-extrabold text-[#1E293B]"
             variants={fadeUp(0.32)} initial="hidden" animate="show"
           >
             Empréstimo Pessoal
           </motion.h1>
 
           <motion.h1
-            className="text-[3.25rem] leading-tight font-extrabold text-[#2563EB] mb-6"
+            className="text-[2.4rem] md:text-[3.25rem] leading-tight font-extrabold text-[#2563EB] mb-5"
             variants={fadeUp(0.42)} initial="hidden" animate="show"
           >
             Rápido e Seguro
           </motion.h1>
 
           <motion.p
-            className="text-gray-500 text-lg leading-relaxed mb-8 max-w-md"
+            className="text-gray-500 text-base md:text-lg leading-relaxed mb-7 max-w-md"
             variants={fadeUp(0.52)} initial="hidden" animate="show"
           >
             Simule seu empréstimo agora e saia do sufoco! Taxas competitivas e aprovação em minutos.
           </motion.p>
 
           <motion.div
-            className="flex flex-wrap gap-4 mb-10"
+            className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8"
             variants={fadeUp(0.62)} initial="hidden" animate="show"
           >
             <motion.button
               whileHover={{ scale: 1.04, boxShadow: '0 8px 24px rgba(30,58,95,.35)' }}
               whileTap={{ scale: 0.97 }}
               onClick={goFunnel}
-              className="bg-[#1E3A5F] text-white px-8 py-4 rounded-full font-semibold transition-colors"
+              className="w-full sm:w-auto bg-[#2563EB] text-white px-8 py-4 rounded-full font-bold text-base transition-colors hover:bg-blue-700"
             >
               Simular agora →
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
-              className="border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-full font-semibold hover:border-gray-400 hover:bg-white transition-colors"
+              className="w-full sm:w-auto border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-full font-bold text-base hover:border-gray-400 hover:bg-white transition-colors"
             >
               Ver condições
             </motion.button>
           </motion.div>
 
           <motion.div
-            className="flex flex-wrap gap-6"
+            className="flex flex-wrap gap-5"
             variants={fadeUp(0.72)} initial="hidden" animate="show"
           >
             {['Aprovação Rápida', '100% Seguro', 'Taxas Justas'].map(b => (
