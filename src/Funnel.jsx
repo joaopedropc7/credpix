@@ -77,10 +77,10 @@ async function cpfLookup(cpf) {
 
 function FunnelHeader() {
   return (
-    <header className="bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between">
-      <img src={LOGO} alt="CredPix" className="h-8 object-contain" />
-      <div className="flex items-center gap-2 text-sm text-gray-500">
-        <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
+    <header className="bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
+      <img src={LOGO} alt="CredPix" className="h-7 object-contain" />
+      <div className="flex items-center gap-1.5 text-xs text-gray-500 whitespace-nowrap">
+        <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
         Regulado · Lei 10.820/2023
       </div>
     </header>
