@@ -242,13 +242,14 @@ function Hero() {
             >
               Simular agora →
             </motion.button>
-            <motion.button
+            <motion.a
+              href="#simulador"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
-              className="w-full sm:w-auto border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-full font-bold text-base hover:border-gray-400 hover:bg-white transition-colors"
+              className="w-full sm:w-auto border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-full font-bold text-base hover:border-gray-400 hover:bg-white transition-colors text-center"
             >
               Ver condições
-            </motion.button>
+            </motion.a>
           </motion.div>
 
           <motion.div
@@ -265,7 +266,7 @@ function Hero() {
         </div>
 
         {/* ── Right card ── */}
-        <div className="flex items-center justify-center py-10 lg:py-0">
+        <div id="simulador" className="flex items-center justify-center py-10 lg:py-0">
           {/* Entrance wrapper */}
           <motion.div
             className="w-full max-w-md"
