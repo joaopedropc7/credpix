@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CredPix — Empréstimo Pessoal Rápido e Seguro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Persistência de UTMs no sessionStorage (roda antes de qualquer redirect) -->
+    <script>
+      (function () {
+        var KEYS = ['utm_source','utm_campaign','utm_medium','utm_content','utm_term','src','sck','clickid'];
+        var p = new URLSearchParams(window.location.search);
+        KEYS.forEach(function (k) { var v = p.get(k); if (v) sessionStorage.setItem('_utm_' + k, v); });
+      })();
+    </script>
+
+    <!-- UTMify tracking -->
+    <script
+      src="https://cdn.utmify.com.br/scripts/utms/latest.js"
+      data-utmify-prevent-xcod-sck
+      data-utmify-prevent-subids
+      async
+      defer
+    ></script>
+    <script>
+      window.googlePixelId = "69a8e109f532be7d079482a3";
+      var a = document.createElement("script");
+      a.setAttribute("async", "");
+      a.setAttribute("defer", "");
+      a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-google.js");
+      document.head.appendChild(a);
+    </script>
+    <script>
+      (function () {
+        var POLL_MS = 500;
+        function getStorageKey() {
+          var url = new URL(window.location.href);
+          var current = url.searchParams.get("utm_source");
+          if (current === "FB") return "lead";
+          if (current === "google") return "lead-google";
+          return null;
+        }
+        function getLeadId(storageKey) {
+          if (!storageKey) return null;
+          var raw = localStorage.getItem(storageKey);
+          if (!raw) return null;
+          try { var obj = JSON.parse(raw); return obj && obj._id ? String(obj._id) : null; } catch { return null; }
+        }
+        function applyUtmIfNeeded() {
+          var url = new URL(window.location.href);
+          var current = url.searchParams.get("utm_source");
+          var storageKey = getStorageKey();
+          var id = getLeadId(storageKey);
+          if (!id) return false;
+          var desired = null;
+          if (current === "FB") desired = "FBjLj" + id;
+          else if (current === "google") desired = "googlejLj" + id;
+          if (!desired) return false;
+          url.searchParams.set("utm_source", desired);
+          window.location.replace(url.toString());
+          return true;
+        }
+        if (applyUtmIfNeeded()) return;
+        var interval = setInterval(function () {
+          if (applyUtmIfNeeded()) clearInterval(interval);
+        }, POLL_MS);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
