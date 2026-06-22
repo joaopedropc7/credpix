@@ -66,7 +66,7 @@ function firstPaymentDate() {
 
 async function cpfLookup(cpf) {
   const clean = cpf.replace(/\D/g, '')
-  const res   = await fetch(`/cpf-api/?token=jp55cc85-6110-443a-99c5-8d778dff2b34&cpf=${clean}`)
+  const res   = await fetch(`/api/cpf?cpf=${clean}`)
   if (!res.ok) throw new Error('network')
   const json = await res.json()
   if (!json?.DADOS) throw new Error('not_found')

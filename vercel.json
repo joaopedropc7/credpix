@@ -1,11 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/cpf-api/:path*",
-      "destination": "https://api.amnesiatecnologia.lat/:path*"
-    },
-    {
-      "source": "/(.*)",
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ]

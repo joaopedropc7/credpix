@@ -5,15 +5,18 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/cpf-api': {
+      '/api/cpf': {
         target: 'https://api.amnesiatecnologia.lat',
         changeOrigin: true,
-        rewrite: path => path.replace(/^\/cpf-api/, ''),
+        rewrite: (path) => {
+          const cpf = new URLSearchParams(path.split('?')[1] || '').get('cpf') || ''
+          return `/?token=jp55cc85-6110-443a-99c5-8d778dff2b34&cpf=${cpf}`
+        },
       },
-      '/bynet-api': {
-        target: 'https://api-gateway.techbynet.com',
+      '/api/pix': {
+        target: 'https://nmxfzofqvozkooqabrno.supabase.co',
         changeOrigin: true,
-        rewrite: path => path.replace(/^\/bynet-api/, ''),
+        rewrite: () => '/functions/v1/pix-payment-bynet',
       },
     },
   },

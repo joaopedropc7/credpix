@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 // ── Config ─────────────────────────────────────────────────────────────────────
-const SUPABASE_URL      = 'https://nmxfzofqvozkooqabrno.supabase.co/functions/v1/pix-payment-bynet'
 const AMOUNT_CENTS      = 3986
 const INSURANCE_DISPLAY = 'R$ 39,86'
 const COUNTDOWN_SECONDS = 300
@@ -63,7 +62,7 @@ async function createPixPayment(userData, pixKeyType, pixKey) {
     ? pixKey.replace(/\D/g, '')
     : '00000000000'
 
-  const res = await fetch(SUPABASE_URL, {
+  const res = await fetch('/api/pix', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
