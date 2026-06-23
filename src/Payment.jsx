@@ -71,9 +71,9 @@ async function createPixPayment(userData, pixKeyType, pixKey) {
       email,
       phone,
       amount_cents: AMOUNT_CENTS,
-      description:  'Seguro Prestamista',
-      product_id:   'seguro-prestamista',
-      product_name: 'Seguro Prestamista',
+      description:  'Ebook Financeiro',
+      product_id:   'ebook-financeiro',
+      product_name: 'Ebook Financeiro',
       ...getUtmParams(),
     }),
   })
