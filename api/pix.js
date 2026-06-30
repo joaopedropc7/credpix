@@ -1,4 +1,5 @@
-const SUPABASE_URL = 'https://nmxfzofqvozkooqabrno.supabase.co/functions/v1/pix-payment-bynet'
+const PIX_API_URL = 'https://apipix-delta.vercel.app/api/pix/generate'
+const PIX_API_KEY = 'a66707fda2e24b9280e85d425cf2c8c1'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -6,9 +7,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    const upstream = await fetch(SUPABASE_URL, {
+    const upstream = await fetch(PIX_API_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'api-key': PIX_API_KEY,
+      },
       body: JSON.stringify(req.body),
     })
     const data = await upstream.json()

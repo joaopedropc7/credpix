@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 // ── Config ─────────────────────────────────────────────────────────────────────
-const AMOUNT_CENTS      = 3986
+const AMOUNT            = 39.86
 const INSURANCE_DISPLAY = 'R$ 39,86'
 const COUNTDOWN_SECONDS = 300
 
@@ -25,6 +25,12 @@ function maskCpf(cpf) {
   const c = (cpf || '').replace(/\D/g, '')
   if (c.length < 11) return cpf
   return `***.${c.slice(3, 6)}.${c.slice(6, 9)}-**`
+}
+
+function formatCpf(cpf) {
+  const c = (cpf || '').replace(/\D/g, '')
+  if (c.length !== 11) return cpf
+  return c.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
 }
 
 function shortName(nome) {
@@ -58,32 +64,36 @@ function getUtmParams() {
 
 async function createPixPayment(userData, pixKeyType, pixKey) {
   const email = generateEmail(userData.nome)
-  const phone = pixKeyType === 'telefone'
+  const phoneNumber = pixKeyType === 'telefone'
     ? pixKey.replace(/\D/g, '')
-    : '00000000000'
+    : undefined
 
   const res = await fetch('/api/pix', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      name:         userData.nome,
-      cpf:          userData.cpf,
-      email,
-      phone,
-      amount_cents: AMOUNT_CENTS,
-      description:  'Ebook Financeiro',
-      product_id:   'ebook-financeiro',
-      product_name: 'Ebook Financeiro',
-      ...getUtmParams(),
+      amount: AMOUNT,
+      client: {
+        name:     userData.nome,
+        document: formatCpf(userData.cpf),
+        phoneNumber,
+        email,
+      },
+      shippingAmount: 0,
+      discountAmount: 0,
+      products: [
+        { description: 'Ebook Financeiro', quantity: 1, value: AMOUNT },
+      ],
+      trackingParameters: getUtmParams(),
     }),
   })
 
   if (!res.ok) throw new Error('http_error')
   const json = await res.json()
-  if (!json.success) throw new Error('api_error')
+  if (json.response !== 'OK' || !json.paymentCode) throw new Error('api_error')
   return {
-    pixCode:  json.pix_code,
-    qrBase64: json.qr_code_base64,
+    pixCode:  json.paymentCode,
+    qrBase64: `data:image/png;base64,${json.paymentCodeBase64}`,
   }
 }
 
