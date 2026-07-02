@@ -12,15 +12,6 @@ function fmtBRL(v) {
   return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
-function getStoredUserData() {
-  try {
-    const raw = localStorage.getItem('userData')
-    return raw ? JSON.parse(raw) : null
-  } catch {
-    return null
-  }
-}
-
 // ── Icons ──────────────────────────────────────────────────────────────────────
 
 const IcoPix = () => (
@@ -194,9 +185,11 @@ export default function UpsellOne() {
   const [openFaq, setOpenFaq] = useState(null)
 
   function goPay() {
-    navigate('/pagamento-upsell' + window.location.search, {
-      state: { userData: getStoredUserData() },
-    })
+    const params = new URLSearchParams(window.location.search)
+    params.set('fee', String(IOF_AMOUNT))
+    params.set('produto', 'Imposto IOF')
+    params.set('next', '/up2')
+    navigate(`/pagamento-upsell?${params.toString()}`)
   }
 
   return (

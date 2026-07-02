@@ -6,6 +6,7 @@ import App            from './App.jsx'
 import Funnel         from './Funnel.jsx'
 import Payment        from './Payment.jsx'
 import UpsellOne      from './UpsellOne.jsx'
+import UpsellTwo      from './UpsellTwo.jsx'
 import PaymentUpsell  from './PaymentUpsell.jsx'
 import './index.css'
 
@@ -18,6 +19,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/emprestimo/simulacao" element={<Funnel />}        />
         <Route path="/pagamento"            element={<Payment />}       />
         <Route path="/up1"                  element={<UpsellOne />}     />
+        <Route path="/up2"                  element={<UpsellTwo />}     />
         <Route path="/pagamento-upsell"     element={<PaymentUpsell />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
